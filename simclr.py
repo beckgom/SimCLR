@@ -44,14 +44,18 @@ class SimCLR(object):
         # assert similarity_matrix.shape == labels.shape
         # (YHLEE) 둘의 shape이 같은데도 불구하고 왜 따로 쓰는지는 의문..구지 그럴 필요가 있을까 싶음
 
+        # (YHLEE) 레이블의 한 축을 batch 사이즈로 잡고, 나머지 한 축을 이용해서 Label의 class vector의 형태로 사용한다.
         # select and combine multiple positives
         positives = similarity_matrix[labels.bool()].view(labels.shape[0], -1)
-
+        # (YHLEE) Label의 1값만 Positive sample로 활용
+        
         # select only the negatives the negatives
         negatives = similarity_matrix[~labels.bool()].view(similarity_matrix.shape[0], -1)
+        # (YHLEE) Label의 0값만 Negative sample로 활용
 
         logits = torch.cat([positives, negatives], dim=1)
         labels = torch.zeros(logits.shape[0], dtype=torch.long).to(self.args.device)
+        # (YHLEE) 이게 좀 이상한데? 왜 다 zero로 설정하지?
 
         logits = logits / self.args.temperature
         return logits, labels
