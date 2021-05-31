@@ -56,6 +56,8 @@ class SimCLR(object):
         logits = torch.cat([positives, negatives], dim=1)
         labels = torch.zeros(logits.shape[0], dtype=torch.long).to(self.args.device)
         # (YHLEE) 이게 좀 이상한데? 왜 다 zero로 설정하지?
+        # (YHLEE) Positive Sample (2B, 1), Negative Sample (2B, 2B-1)로 설정이 되고,
+        #         Positive Sample은 오직 1개, 항상 0번째이니까 Label은 항상 0으로 설정하여 Labels을 만듬
 
         logits = logits / self.args.temperature
         return logits, labels
