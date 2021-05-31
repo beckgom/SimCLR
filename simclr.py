@@ -26,7 +26,8 @@ class SimCLR(object):
     def info_nce_loss(self, features):
 
         labels = torch.cat([torch.arange(self.args.batch_size) for i in range(self.args.n_views)], dim=0)
-        labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float()
+        labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float() # (YHLEE) Label을 이용한 Matrix 만들기
+        # (YHLEE) diagonal과 shifted diagonal에 1로 설정
         labels = labels.to(self.args.device)
 
         features = F.normalize(features, dim=1)
@@ -41,6 +42,7 @@ class SimCLR(object):
         labels = labels[~mask].view(labels.shape[0], -1)
         similarity_matrix = similarity_matrix[~mask].view(similarity_matrix.shape[0], -1)
         # assert similarity_matrix.shape == labels.shape
+        # (YHLEE) 둘의 shape이 같은데도 불구하고 왜 따로 쓰는지는 의문..구지 그럴 필요가 있을까 싶음
 
         # select and combine multiple positives
         positives = similarity_matrix[labels.bool()].view(labels.shape[0], -1)
